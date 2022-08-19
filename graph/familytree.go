@@ -28,6 +28,10 @@ func (f *FamilyTree) AddMember(name string) (id int) {
 	return
 }
 
+func (f *FamilyTree) GetMemberByID(idMember int) {
+
+}
+
 func (f *FamilyTree) AddKinship(idMember, idRelative int, kinship string) {
 	f.members[idMember].kinship[idRelative] = kinship
 }
