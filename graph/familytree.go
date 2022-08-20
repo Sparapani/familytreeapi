@@ -1,5 +1,7 @@
 package graph
 
+import "fmt"
+
 // FamilyTree represents a graph of a family tree
 type FamilyTree struct {
 	Members []*Member `json:"members,omitempty"`
@@ -30,6 +32,15 @@ func (f *FamilyTree) AddMember(name string) (id int) {
 	return
 }
 
+func (f *FamilyTree) UpdateMember(member Member) {
+	f.Members[member.ID].Name = member.Name
+	f.Members[member.ID].Children = member.Children
+	f.Members[member.ID].Parents = member.Parents
+}
+
+func (f *FamilyTree) RemoveMember(memberID int) {
+}
+
 func (f *FamilyTree) AddKinship(idMember, idRelative int, grade Relative) {
 
 	if f.Members[idMember] == nil {
@@ -51,9 +62,26 @@ func (f *FamilyTree) GetMemberByID(idMember int) (memberOut Member) {
 	return
 }
 
+func (f *FamilyTree) GetMemberNameByID(idMember int) (memberName string) {
+	if f.Members[idMember] == nil {
+		return
+	}
+	memberName = f.Members[idMember].Name
+	return
+}
+
+func (f *FamilyTree) GetRelationshipbyEnum(rel Relative) (meaning string) {
+	if rel == Parents {
+		meaning = "Parents"
+		return
+	}
+	meaning = "Children"
+	return
+}
+
 func (f *FamilyTree) GetMemberIDByName(name string) (id int) {
+	id = -1
 	if f.Members == nil {
-		id = -1
 		return
 	}
 	for _, member := range f.Members {
@@ -78,7 +106,8 @@ func (f *FamilyTree) GetMembers() (membersOut []Member) {
 }
 
 func (f *FamilyTree) FindMemberRelatives(idMember int) (parents []Member) {
-	if f.Members[idMember] == nil {
+	fmt.Println("idMember", idMember)
+	if idMember == -1 || f.Members[idMember] == nil {
 		return
 	}
 	parents = append(parents, *f.Members[idMember])

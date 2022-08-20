@@ -1,8 +1,6 @@
 package services
 
 import (
-	"fmt"
-
 	"github.com/Sparapani/familytreeapi/graph"
 )
 
@@ -54,8 +52,4 @@ func InitialCharge() {
 	AddKinship(GetMemberIDByName("Jacqueline"), GetMemberIDByName("Eric"), graph.Parents)
 	AddKinship(GetMemberIDByName("Melody"), GetMemberIDByName("Eric"), graph.Parents)
 	AddKinship(GetMemberIDByName("Melody"), GetMemberIDByName("Ariel"), graph.Parents)
-
-	fmt.Println(GetAllMembers())
-
-	GetRelativeMember()
 }
