@@ -1,6 +1,8 @@
 package graph
 
+type Relative int
+
 const (
-	Parents  = "parent"
-	Children = "children"
+	Parents Relative = iota
+	Children
 )

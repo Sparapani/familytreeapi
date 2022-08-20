@@ -69,11 +69,11 @@ func main() {
 	familyTree.AddKinship(familyTree.GetMemberIDByName("Melody"), familyTree.GetMemberIDByName("Eric"), graph.Parents)
 	familyTree.AddKinship(familyTree.GetMemberIDByName("Melody"), familyTree.GetMemberIDByName("Ariel"), graph.Parents)
 
-	familyMembers := familyTree.GetMembers()
 	fmt.Println("Member ID - Member Name - Relatives")
-	for i := range familyMembers {
+
+	for i := range familyTree.Members {
 		fmt.Println(familyTree.GetMemberByID(i))
 	}
 
-	familyTree.FindMemberRelatives(11)
+	fmt.Println(familyTree.FindMemberRelatives(11))
 }
