@@ -1,7 +1,5 @@
 package graph
 
-import "fmt"
-
 // FamilyTree represents a graph of a family tree
 type FamilyTree struct {
 	Members []*Member `json:"members,omitempty"`
@@ -11,9 +9,13 @@ type FamilyTree struct {
 type Member struct {
 	ID       int              `json:"id,omitempty"`       // member ID (unique)
 	Name     string           `json:"name,omitempty"`     // name of the family member
-	Parents  map[int]Relative `json:"parents,omitempty"`  // kinship of that member. key is id of relative and value is the kinship
-	Children map[int]Relative `json:"children,omitempty"` // kinship of that member. key is id of relative and value is the kinship
+	Parents  map[int]Relative `json:"parents,omitempty"`  // parents of that member. key is id of relative and value is the kinship
+	Children map[int]Relative `json:"children,omitempty"` // children of that member. key is id of relative and value is the kinship
+	Spouse   map[int]Relative `json:"spouse,omitempty"`   // spouse of that member. key is id of relative and value is the kinship
+	Cousins  map[int]Relative `json:"cousins,omitempty"`  // cousins of that member. key is id of relative and value is the kinship
 }
+
+var relativeFound map[int]bool
 
 func NewFamilyTree() *FamilyTree {
 	return &FamilyTree{
@@ -28,6 +30,8 @@ func (f *FamilyTree) AddMember(name string) (id int) {
 		Name:     name,
 		Parents:  make(map[int]Relative),
 		Children: make(map[int]Relative),
+		Spouse:   make(map[int]Relative),
+		Cousins:  make(map[int]Relative),
 	})
 	return
 }
@@ -38,17 +42,53 @@ func (f *FamilyTree) AddKinship(idMember, idRelative int, grade Relative) {
 		return
 	}
 
-	if grade == Parents {
+	switch grade {
+	case Parents:
 		f.Members[idMember].Parents[idRelative] = Parents
-		return
+	case Children:
+		f.Members[idMember].Children[idRelative] = Children
+		f.checkSpouse(idMember, idRelative)
+		f.checkCousins(idMember, idRelative)
+	case Spouse:
+		f.Members[idMember].Spouse[idRelative] = Spouse
+		f.Members[idRelative].Spouse[idMember] = Spouse
+	case Cousins:
+		f.Members[idMember].Cousins[idRelative] = Cousins
+		f.Members[idRelative].Cousins[idMember] = Cousins
+
 	}
-	f.Members[idMember].Children[idRelative] = Children
+}
+
+func (f *FamilyTree) checkSpouse(idMember, idRelative int) {
+	for i, member := range f.Members {
+		for j := range member.Children {
+			if j == idRelative && i != idMember {
+				f.AddKinship(i, idMember, Spouse)
+			}
+		}
+	}
+}
+
+func (f *FamilyTree) checkCousins(idMember, idRelative int) {
+	for _, member := range f.Members {
+		for i := range member.Parents {
+			for j := range f.Members[i].Children {
+				for l := range f.Members[j].Children {
+					if idRelative != l {
+						f.AddKinship(idRelative, l, Cousins)
+					}
+				}
+			}
+		}
+	}
 }
 
 func (f *FamilyTree) UpdateMember(member Member) {
 	f.Members[member.ID].Name = member.Name
 	f.Members[member.ID].Children = member.Children
 	f.Members[member.ID].Parents = member.Parents
+	f.Members[member.ID].Spouse = member.Spouse
+	f.Members[member.ID].Cousins = member.Cousins
 }
 
 func (f *FamilyTree) RemoveMember(memberID int) {
@@ -71,11 +111,16 @@ func (f *FamilyTree) GetMemberNameByID(idMember int) (memberName string) {
 }
 
 func (f *FamilyTree) GetRelationshipbyEnum(rel Relative) (meaning string) {
-	if rel == Parents {
+	switch rel {
+	case Parents:
 		meaning = "Parents"
-		return
+	case Children:
+		meaning = "Children"
+	case Spouse:
+		meaning = "Spouse"
+	case Cousins:
+		meaning = "Cousins"
 	}
-	meaning = "Children"
 	return
 }
 
@@ -100,18 +145,22 @@ func (f *FamilyTree) GetMembers() (membersOut []Member) {
 			Name:     member.Name,
 			Parents:  member.Parents,
 			Children: member.Children,
+			Spouse:   member.Spouse,
+			Cousins:  member.Cousins,
 		})
 	}
 	return
 }
 
-func (f *FamilyTree) FindMemberRelatives(idMember int) (parents []Member) {
-	fmt.Println("idMember", idMember)
+func (f *FamilyTree) FindMemberRelatives(idMember int) (relatives []Member) {
 	if idMember == -1 || f.Members[idMember] == nil {
 		return
 	}
-	parents = append(parents, *f.Members[idMember])
-	parents = append(parents, f.findParents(f.Members[idMember].Parents)...)
+	relativeFound = make(map[int]bool)
+	relatives = append(relatives, *f.Members[idMember])
+	relativeFound[idMember] = true
+	relatives = append(relatives, f.findChildren(f.Members[idMember].Children)...)
+	relatives = append(relatives, f.findParents(f.Members[idMember].Parents)...)
 	return
 }
 
@@ -121,8 +170,27 @@ func (f *FamilyTree) findParents(parentsIn map[int]Relative) (parentsOut []Membe
 	}
 	for i := range parentsIn {
 		member := f.GetMemberByID(i)
-		parentsOut = append(parentsOut, member)
+		if !relativeFound[member.ID] {
+			parentsOut = append(parentsOut, member)
+			relativeFound[member.ID] = true
+		}
 		parentsOut = append(parentsOut, f.findParents(f.Members[i].Parents)...)
+		parentsOut = append(parentsOut, f.findChildren(f.Members[i].Children)...)
+	}
+	return
+}
+
+func (f *FamilyTree) findChildren(childrenIn map[int]Relative) (childrenOut []Member) {
+	if len(childrenIn) == 0 {
+		return
+	}
+	for i := range childrenIn {
+		member := f.GetMemberByID(i)
+		if !relativeFound[member.ID] {
+			childrenOut = append(childrenOut, member)
+			relativeFound[member.ID] = true
+		}
+		childrenOut = append(childrenOut, f.findChildren(f.Members[i].Children)...)
 	}
 	return
 }

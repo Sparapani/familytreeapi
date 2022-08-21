@@ -30,6 +30,18 @@ func GetAllMembers() (membersOut []types.MemberAPI) {
 				Relationship: familyTree.GetRelationshipbyEnum(relationship),
 			})
 		}
+		for i, relationship := range memberTemp.Spouse {
+			memberOut.Relationships = append(memberOut.Relationships, types.RelationShip{
+				Name:         familyTree.GetMemberNameByID(i),
+				Relationship: familyTree.GetRelationshipbyEnum(relationship),
+			})
+		}
+		for i, relationship := range memberTemp.Cousins {
+			memberOut.Relationships = append(memberOut.Relationships, types.RelationShip{
+				Name:         familyTree.GetMemberNameByID(i),
+				Relationship: familyTree.GetRelationshipbyEnum(relationship),
+			})
+		}
 		membersOut = append(membersOut, memberOut)
 	}
 	return
