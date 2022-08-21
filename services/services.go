@@ -47,10 +47,6 @@ func GetAllMembers() (membersOut []types.MemberAPI) {
 	return
 }
 
-func GetMemberIDByName(name string) int {
-	return familyTree.GetMemberIDByName(name)
-}
-
 func GetRelativesByID(member graph.Member) (relativesOut []types.MemberAPI) {
 	relatives := familyTree.FindMemberRelatives(familyTree.GetMemberIDByName(member.Name))
 	for _, relative := range relatives {
@@ -65,6 +61,18 @@ func GetRelativesByID(member graph.Member) (relativesOut []types.MemberAPI) {
 		relativesOut = append(relativesOut, relativeOut)
 	}
 	return
+}
+
+func GetBaconsNumber(members types.BaconsNumber) (baconNumbes int) {
+	if members.NameFrom == "" || members.NameTo == "" {
+		return -1
+	}
+	baconNumbes, _ = familyTree.GetBaconsNumber(familyTree.GetMemberIDByName(members.NameFrom), familyTree.GetMemberIDByName(members.NameTo), -1, false, make(map[int]bool))
+	return
+}
+
+func GetMemberIDByName(name string) int {
+	return familyTree.GetMemberIDByName(name)
 }
 
 func AddMember(member string) int {

@@ -16,6 +16,7 @@ type Member struct {
 }
 
 var relativeFound map[int]bool
+var personSearch map[int]bool
 
 func NewFamilyTree() *FamilyTree {
 	return &FamilyTree{
@@ -150,6 +151,36 @@ func (f *FamilyTree) GetMembers() (membersOut []Member) {
 		})
 	}
 	return
+}
+
+func (f *FamilyTree) GetBaconsNumber(idActually, idToFound, baconsNumber int, found bool, personActually map[int]bool) (int, bool) {
+	if idActually == idToFound {
+		baconsNumber++
+		return baconsNumber, true
+	}
+	baconsNumber++
+	personSearch = make(map[int]bool)
+	personSearch = personActually
+	personSearch[idActually] = true
+	for i := range f.Members[idActually].Parents {
+		if found {
+			return baconsNumber, found
+		}
+		if !personSearch[i] {
+			baconsNumber, found = f.GetBaconsNumber(i, idToFound, baconsNumber, found, personSearch)
+
+		}
+	}
+	for i := range f.Members[idActually].Children {
+		if found {
+			return baconsNumber, found
+		}
+		if !personSearch[i] {
+			baconsNumber, found = f.GetBaconsNumber(i, idToFound, baconsNumber, found, personSearch)
+		}
+	}
+	baconsNumber--
+	return baconsNumber, found
 }
 
 func (f *FamilyTree) FindMemberRelatives(idMember int) (relatives []Member) {
