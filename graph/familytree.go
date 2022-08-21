@@ -32,15 +32,6 @@ func (f *FamilyTree) AddMember(name string) (id int) {
 	return
 }
 
-func (f *FamilyTree) UpdateMember(member Member) {
-	f.Members[member.ID].Name = member.Name
-	f.Members[member.ID].Children = member.Children
-	f.Members[member.ID].Parents = member.Parents
-}
-
-func (f *FamilyTree) RemoveMember(memberID int) {
-}
-
 func (f *FamilyTree) AddKinship(idMember, idRelative int, grade Relative) {
 
 	if f.Members[idMember] == nil {
@@ -52,6 +43,15 @@ func (f *FamilyTree) AddKinship(idMember, idRelative int, grade Relative) {
 		return
 	}
 	f.Members[idMember].Children[idRelative] = Children
+}
+
+func (f *FamilyTree) UpdateMember(member Member) {
+	f.Members[member.ID].Name = member.Name
+	f.Members[member.ID].Children = member.Children
+	f.Members[member.ID].Parents = member.Parents
+}
+
+func (f *FamilyTree) RemoveMember(memberID int) {
 }
 
 func (f *FamilyTree) GetMemberByID(idMember int) (memberOut Member) {

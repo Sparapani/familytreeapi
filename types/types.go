@@ -1,11 +1,11 @@
 package types
 
-type MembersResponse struct {
-	Name          string
-	Relationships []RelationShip
+type MemberAPI struct {
+	Name          string         `json:"name,omitempty"`
+	Relationships []RelationShip `json:"relationships,omitempty"`
 }
 
 type RelationShip struct {
-	Name         string
-	Relationship string
+	Name         string `json:"name,omitempty"`
+	Relationship string `json:"relationship,omitempty"`
 }
