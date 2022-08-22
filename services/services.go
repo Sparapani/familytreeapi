@@ -2,7 +2,7 @@ package services
 
 import (
 	"github.com/Sparapani/familytreeapi/graph"
-	"github.com/Sparapani/familytreeapi/types"
+	"github.com/Sparapani/familytreeapi/models"
 )
 
 var familyTree *graph.FamilyTree
@@ -11,33 +11,33 @@ func InitTree() {
 	familyTree = graph.NewFamilyTree()
 }
 
-func GetAllMembers() (membersOut []types.MemberAPI) {
+func GetAllMembers() (membersOut []models.MemberAPI) {
 	if familyTree.Members == nil {
 		return
 	}
 	for _, member := range familyTree.Members {
 		memberTemp := familyTree.GetMemberByID(member.ID)
-		memberOut := types.MemberAPI{Name: memberTemp.Name}
+		memberOut := models.MemberAPI{Name: memberTemp.Name}
 		for i, relationship := range memberTemp.Children {
-			memberOut.Relationships = append(memberOut.Relationships, types.RelationShip{
+			memberOut.Relationships = append(memberOut.Relationships, models.RelationShip{
 				Name:         familyTree.GetMemberNameByID(i),
 				Relationship: familyTree.GetRelationshipbyEnum(relationship),
 			})
 		}
 		for i, relationship := range memberTemp.Parents {
-			memberOut.Relationships = append(memberOut.Relationships, types.RelationShip{
+			memberOut.Relationships = append(memberOut.Relationships, models.RelationShip{
 				Name:         familyTree.GetMemberNameByID(i),
 				Relationship: familyTree.GetRelationshipbyEnum(relationship),
 			})
 		}
 		for i, relationship := range memberTemp.Spouse {
-			memberOut.Relationships = append(memberOut.Relationships, types.RelationShip{
+			memberOut.Relationships = append(memberOut.Relationships, models.RelationShip{
 				Name:         familyTree.GetMemberNameByID(i),
 				Relationship: familyTree.GetRelationshipbyEnum(relationship),
 			})
 		}
 		for i, relationship := range memberTemp.Cousins {
-			memberOut.Relationships = append(memberOut.Relationships, types.RelationShip{
+			memberOut.Relationships = append(memberOut.Relationships, models.RelationShip{
 				Name:         familyTree.GetMemberNameByID(i),
 				Relationship: familyTree.GetRelationshipbyEnum(relationship),
 			})
@@ -47,13 +47,13 @@ func GetAllMembers() (membersOut []types.MemberAPI) {
 	return
 }
 
-func GetRelativesByID(member graph.Member) (relativesOut []types.MemberAPI) {
+func GetRelativesByID(member graph.Member) (relativesOut []models.MemberAPI) {
 	relatives := familyTree.FindMemberRelatives(familyTree.GetMemberIDByName(member.Name))
 	for _, relative := range relatives {
 		relativeTemp := familyTree.GetMemberByID(relative.ID)
-		relativeOut := types.MemberAPI{Name: relativeTemp.Name}
+		relativeOut := models.MemberAPI{Name: relativeTemp.Name}
 		for j := range relativeTemp.Parents {
-			relativeOut.Relationships = append(relativeOut.Relationships, types.RelationShip{
+			relativeOut.Relationships = append(relativeOut.Relationships, models.RelationShip{
 				Name:         familyTree.GetMemberNameByID(j),
 				Relationship: "Parents",
 			})
@@ -63,7 +63,7 @@ func GetRelativesByID(member graph.Member) (relativesOut []types.MemberAPI) {
 	return
 }
 
-func GetBaconsNumber(members types.BaconsNumber) (baconNumbes int) {
+func GetBaconsNumber(members models.BaconsNumber) (baconNumbes int) {
 	if members.NameFrom == "" || members.NameTo == "" {
 		return -1
 	}

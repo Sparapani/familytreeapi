@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/Sparapani/familytreeapi/graph"
+	"github.com/Sparapani/familytreeapi/models"
 	"github.com/Sparapani/familytreeapi/services"
-	"github.com/Sparapani/familytreeapi/types"
 	"github.com/gorilla/mux"
 )
 
@@ -52,7 +52,7 @@ func getRelativeByID(w http.ResponseWriter, r *http.Request) {
 func getBaconsNumber(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var members types.BaconsNumber
+	var members models.BaconsNumber
 
 	json.NewDecoder(r.Body).Decode(&members)
 

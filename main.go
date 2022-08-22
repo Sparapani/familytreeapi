@@ -1,3 +1,4 @@
+// Package main implements the all functions to make an API runnable
 package main
 
 import (

@@ -1,4 +1,5 @@
-package types
+// Package models implements the models to support the tree
+package models
 
 type MemberAPI struct {
 	Name          string         `json:"name,omitempty"`
