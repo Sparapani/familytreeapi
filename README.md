@@ -1,4 +1,4 @@
-# streetmarketAPI
+# familytreeAPI
 
 - To start the API, execute "go build" and "./familytreeapi" or use a docker-compose file
 - To make a request, use "Postman" or another software which supports REST calls
