@@ -15,6 +15,6 @@ POST, PUT (UPDATE) AND DELETE:
 initial data:
 by default is create some members and relatives
 
-The response statuses gonna be:
+The response statuses can be:
 200 - OK
 400 - Bad request (if some required field is empty)
