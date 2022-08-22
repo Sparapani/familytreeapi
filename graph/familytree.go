@@ -46,8 +46,10 @@ func (f *FamilyTree) AddKinship(idMember, idRelative int, grade Relative) {
 	switch grade {
 	case Parents:
 		f.Members[idMember].Parents[idRelative] = Parents
+		f.Members[idRelative].Children[idMember] = Children
 	case Children:
 		f.Members[idMember].Children[idRelative] = Children
+		f.Members[idRelative].Parents[idMember] = Parents
 		f.checkSpouse(idMember, idRelative)
 		f.checkCousins(idMember, idRelative)
 	case Spouse:
@@ -154,6 +156,9 @@ func (f *FamilyTree) GetMembers() (membersOut []Member) {
 }
 
 func (f *FamilyTree) GetBaconsNumber(idActually, idToFound, baconsNumber int, found bool, personActually map[int]bool) (int, bool) {
+	if found {
+		return baconsNumber, found
+	}
 	if idActually == idToFound {
 		baconsNumber++
 		return baconsNumber, true
@@ -163,18 +168,12 @@ func (f *FamilyTree) GetBaconsNumber(idActually, idToFound, baconsNumber int, fo
 	personSearch = personActually
 	personSearch[idActually] = true
 	for i := range f.Members[idActually].Parents {
-		if found {
-			return baconsNumber, found
-		}
 		if !personSearch[i] {
 			baconsNumber, found = f.GetBaconsNumber(i, idToFound, baconsNumber, found, personSearch)
 
 		}
 	}
 	for i := range f.Members[idActually].Children {
-		if found {
-			return baconsNumber, found
-		}
 		if !personSearch[i] {
 			baconsNumber, found = f.GetBaconsNumber(i, idToFound, baconsNumber, found, personSearch)
 		}
