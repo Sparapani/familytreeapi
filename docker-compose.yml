@@ -1,0 +1,12 @@
+version: "3.5"
+services:
+  omulu:
+    hostname: familytree
+    image: familytree:latest
+    build:
+      context: .
+    volumes:
+      - ./error-reporting.json:/key-errorreporting/error-reporting.json:ro
+    restart: always
+    env_file:
+      - .env
